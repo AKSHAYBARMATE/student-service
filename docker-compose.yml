@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: student-service-postgres
+    environment:
+      POSTGRES_DB: school_erp_students
+      POSTGRES_USER: school_user
+      POSTGRES_PASSWORD: school_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - student-network
+
+  student-service:
+    build: .
+    container_name: student-service-app
+    depends_on:
+      - postgres
+    environment:
+      DB_USERNAME: school_user
+      DB_PASSWORD: school_password
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/school_erp_students
+    ports:
+      - "8080:8080"
+    networks:
+      - student-network
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+
+networks:
+  student-network:
+    driver: bridge
