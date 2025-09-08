@@ -69,7 +69,6 @@ public class StudentDocumentServiceImpl implements StudentDocumentService {
                 doc.setDocumentType(req.getDocumentType());
                 doc.setS3Key(key);
                 doc.setS3Url(s3Url);
-                doc.setDocumentType(file.getContentType());
                 doc.setDocumentName(file.getOriginalFilename());
 
                 result.add(repository.save(doc));

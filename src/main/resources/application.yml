@@ -56,8 +56,8 @@ logging:
     name: logs/student-service.log
 
 aws:
-  accessKey: AKIAYM45RKJWAVZQTZMF
-  secretKey: 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
+  accessKey: AKIAYM45RKJWHBW67LQW
+  secretKey: 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
   region: us-east-1
   s3:
     bucket-name: erp-school-management
