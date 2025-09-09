@@ -28,4 +28,12 @@ public class StudentDocumentController {
         return ResponseEntity.ok(savedDocs);
     }
 
+
+        @DeleteMapping("delete/{id}")
+        public ResponseEntity<String> deleteDocument(@PathVariable Integer id) {
+            documentService.deleteStudentDocument(id);
+            return ResponseEntity.ok("Document deleted successfully");
+        }
+
+
 }

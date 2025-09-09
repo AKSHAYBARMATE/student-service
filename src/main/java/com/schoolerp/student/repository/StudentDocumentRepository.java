@@ -11,4 +11,6 @@ import java.util.Optional;
 public interface StudentDocumentRepository extends JpaRepository<StudentDocument, Integer> {
 
     List<StudentDocument> findByStudentIdAndIsDeletedFalse(Integer id);
+
+    StudentDocument findByIdAndIsDeletedFalse(Integer documentId);
 }

@@ -9,4 +9,6 @@ import java.util.List;
 
 public interface StudentDocumentService {
     List<StudentDocument> uploadStudentDocuments(List<StudentDocumentRequest> requests) throws IOException;
+
+    void deleteStudentDocument(Integer documentId);
 }

@@ -77,5 +77,19 @@ public class StudentDocumentServiceImpl implements StudentDocumentService {
             return result;
         }
 
+    @Override
+    public void deleteStudentDocument(Integer documentId) {
+        StudentDocument doc = repository.findByIdAndIsDeletedFalse(documentId);
+        if (doc == null) {
+            throw new IllegalArgumentException("Document not found with id: " + documentId);
+        }
+        doc.setDeleted(true);
+        repository.save(doc);
     }
+
+
+
+
+
+}
 
