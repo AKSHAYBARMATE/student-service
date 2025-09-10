@@ -79,7 +79,7 @@ public class StudentResponseDto {
     
     private String transferCertificateNo;
     
-    private String previousClassPassed;
+    private Integer previousClassPassed;
     
     private String board;
     

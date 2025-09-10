@@ -81,7 +81,7 @@ public class StudentRequestDto {
     
     private String transferCertificateNo;
     
-    private String previousClassPassed;
+    private Integer previousClassPassed;
     
     private String board;
     

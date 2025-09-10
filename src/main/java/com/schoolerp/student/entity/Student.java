@@ -101,7 +101,7 @@ public class Student {
     
     private String transferCertificateNo;
     
-    private String previousClassPassed;
+    private Integer previousClassPassed;
     
     private String board;
     
