@@ -93,9 +93,8 @@ public class Student {
     private Integer classApplyingFor;
     
     private Integer section;
-    
-    @Builder.Default
-    private String academicYear = "2024-25";
+
+    private Integer academicYear;
     
     private String previousSchoolName;
     

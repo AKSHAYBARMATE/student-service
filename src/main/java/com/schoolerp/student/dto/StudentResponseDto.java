@@ -73,7 +73,7 @@ public class StudentResponseDto {
     
     private Integer section;
     
-    private String academicYear;
+    private Integer academicYear;
     
     private String previousSchoolName;
     
@@ -96,4 +96,6 @@ public class StudentResponseDto {
     private LocalDateTime updatedAt;
 
     List<StudentDocumentDto> studentDocuments;;
+
+    private FeeStructureResponse feeStructureResponse;
 }

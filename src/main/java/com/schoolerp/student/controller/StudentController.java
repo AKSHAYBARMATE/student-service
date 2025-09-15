@@ -23,13 +23,13 @@ import java.util.List;
 public class StudentController {
 
     @Autowired
-    private final StudentServiceIMPL studentService;
+    private final StudentServiceImpl studentService;
     @Autowired
     private final IdCardServiceIMPL idCardService;
     @Autowired
     private final MarksheetServiceIMPL marksheetService;
 
-    public StudentController(StudentServiceIMPL studentService, IdCardServiceIMPL idCardService, MarksheetServiceIMPL marksheetService ) {
+    public StudentController(StudentServiceImpl studentService, IdCardServiceIMPL idCardService, MarksheetServiceIMPL marksheetService) {
         this.studentService = studentService;
         this.idCardService = idCardService;
         this.marksheetService = marksheetService;

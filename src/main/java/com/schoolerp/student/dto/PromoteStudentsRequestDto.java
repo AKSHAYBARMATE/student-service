@@ -32,7 +32,7 @@ public class PromoteStudentsRequestDto {
     private Integer toSection;
 
     @NotBlank(message = "Academic year is required")
-    private String academicYear;
+    private Integer academicYear;
 
     private boolean markAsAlumni = false;
 

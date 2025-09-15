@@ -6,7 +6,7 @@ import com.schoolerp.student.dto.*;
  * Interface for Student Service operations
  * Defines contract for student management functionality
  */
-public interface StudentServiceIMPL {
+public interface StudentServiceImpl {
     
     /**
      * Retrieves all students with optional filtering and pagination

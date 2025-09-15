@@ -3,17 +3,11 @@ package com.schoolerp.student.service;
 import com.schoolerp.student.common.LogContext;
 import com.schoolerp.student.constants.ServiceConstants;
 import com.schoolerp.student.dto.*;
-import com.schoolerp.student.entity.Student;
-import com.schoolerp.student.entity.StudentDocument;
-import com.schoolerp.student.entity.StudentPromotionMapper;
+import com.schoolerp.student.entity.*;
 import com.schoolerp.student.exception.CustomException;
 import com.schoolerp.student.exception.ResourceNotFoundException;
 import com.schoolerp.student.mapper.StudentMapper;
-import com.schoolerp.student.repository.CommonMasterRepository;
-import com.schoolerp.student.repository.StudentDocumentRepository;
-import com.schoolerp.student.repository.StudentPromotionMapperRepository;
-import com.schoolerp.student.repository.StudentRepository;
-import com.schoolerp.student.entity.CommonMaster;
+import com.schoolerp.student.repository.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -24,21 +18,25 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Slf4j
 @Transactional
-public class StudentService implements StudentServiceIMPL {
+class StudentService implements StudentServiceImpl {
     
     private final StudentRepository studentRepository;
     private final StudentMapper studentMapper;
+    private final FeeStructureRepository feeStructureRepository;
     private final StudentPromotionMapperRepository studentPromotionMapperRepository;
     private final CommonMasterRepository commonMasterRepository;
     private final StudentDocumentRepository studentDocumentRepository;
 
-    public StudentService(StudentRepository studentRepository, StudentMapper studentMapper, StudentPromotionMapperRepository studentPromotionMapperRepository, CommonMasterRepository commonMasterRepository, StudentDocumentRepository studentDocumentRepository) {
+
+    StudentService(StudentRepository studentRepository, StudentMapper studentMapper, FeeStructureRepository feeStructureRepository, StudentPromotionMapperRepository studentPromotionMapperRepository, CommonMasterRepository commonMasterRepository, StudentDocumentRepository studentDocumentRepository) {
         this.studentRepository = studentRepository;
         this.studentMapper = studentMapper;
+        this.feeStructureRepository = feeStructureRepository;
         this.studentPromotionMapperRepository = studentPromotionMapperRepository;
         this.commonMasterRepository = commonMasterRepository;
         this.studentDocumentRepository = studentDocumentRepository;
@@ -80,25 +78,24 @@ public class StudentService implements StudentServiceIMPL {
             throw e;
         }
     }
-    
+
     @Override
     public StudentResponseDto getStudentById(Integer id) {
         String logId = LogContext.getLogId();
         log.info("logId: {} - Starting getStudentById for id: {}", logId, id);
-        
+
         try {
             Student student = studentRepository.findByIdAndIsDeletedFalse(id)
-                .orElseThrow(() -> {
-                    log.warn("logId: {} - Student not found with id: {}", logId, id);
-                    return new ResourceNotFoundException("Student not found with id: " + id);
-                });
-            
+                    .orElseThrow(() -> {
+                        log.warn("logId: {} - Student not found with id: {}", logId, id);
+                        return new ResourceNotFoundException("Student not found with id: " + id);
+                    });
+
+            // Map student to DTO
             StudentResponseDto result = studentMapper.toDto(student);
 
-
+            // 🔹 Attach student documents
             List<StudentDocument> documents = studentDocumentRepository.findByStudentIdAndIsDeletedFalse(id);
-
-            // 🔹 Map documents to DTOs
             List<StudentDocumentDto> documentDtos = documents.stream()
                     .map(doc -> new StudentDocumentDto(
                             doc.getId(),
@@ -107,20 +104,32 @@ public class StudentService implements StudentServiceIMPL {
                             doc.getS3Url()
                     ))
                     .toList();
-
             result.setStudentDocuments(documentDtos);
-            
-            log.info("logId: {} - Successfully retrieved student: {} {}", 
-                     logId, student.getFirstName(), student.getLastName());
-            
+
+            // 🔹 Fetch and attach FeeStructure
+            if (student.getClassApplyingFor() != null && student.getAcademicYear() != null) {
+                Optional<FeeStructure> feeStructureOpt = feeStructureRepository.findByClassId_IdAndAcademicYear_IdAndIsDeletedFalse(
+                        student.getClassApplyingFor(),
+                        student.getAcademicYear() // assuming it's an object; adjust if it's just ID
+                );
+
+                feeStructureOpt.ifPresent(feeStructure -> {
+                    FeeStructureResponse feeStructureDto = StudentMapper.toFeeStructureResponse(feeStructure);
+                    result.setFeeStructureResponse(feeStructureDto);
+                });
+            }
+
+            log.info("logId: {} - Successfully retrieved student: {} {}", logId, student.getFirstName(), student.getLastName());
+
             return result;
-            
+
         } catch (Exception e) {
             log.error("logId: {} - Error retrieving student with id {}: {}", logId, id, e.getMessage(), e);
             throw e;
         }
     }
-    
+
+
     @Override
     public StudentResponseDto createStudent(StudentRequestDto requestDto) {
         String logId = LogContext.getLogId();

@@ -1,7 +1,9 @@
 package com.schoolerp.student.mapper;
 
+import com.schoolerp.student.dto.FeeStructureResponse;
 import com.schoolerp.student.dto.StudentRequestDto;
 import com.schoolerp.student.dto.StudentResponseDto;
+import com.schoolerp.student.entity.FeeStructure;
 import com.schoolerp.student.entity.Student;
 import org.springframework.stereotype.Component;
 
@@ -151,4 +153,64 @@ public class StudentMapper {
             return Student.FeesStatus.UNPAID;
         }
     }
+
+
+    public static FeeStructureResponse toFeeStructureResponse(FeeStructure feeStructure) {
+        if (feeStructure == null) return null;
+
+        FeeStructureResponse response = new FeeStructureResponse();
+
+
+        // Class
+        if (feeStructure.getClassId() != null) {
+            response.setClassId((long) feeStructure.getClassId().getId());
+            response.setClassName(feeStructure.getClassId().getData());
+        }
+
+        // Section
+        if (feeStructure.getSectionId() != null) {
+            response.setSectionId((long) feeStructure.getSectionId().getId());
+            response.setSectionName(feeStructure.getSectionId().getData());
+        }
+
+        // Academic Year
+        if (feeStructure.getAcademicYear() != null) {
+            response.setAcademicYearId((long) feeStructure.getAcademicYear().getId());
+            response.setAcademicYearName(feeStructure.getAcademicYear().getData());
+        }
+
+        // Payment Frequency
+        if (feeStructure.getPaymentFrequency() != null) {
+            response.setPaymentFrequencyId((long) feeStructure.getPaymentFrequency().getId());
+            response.setPaymentFrequencyName(feeStructure.getPaymentFrequency().getData());
+        }
+
+        // Fee amounts
+        response.setFeeStructureName(feeStructure.getFeeStructureName());
+        response.setTuitionFee(feeStructure.getTuitionFee());
+        response.setAdmissionFee(feeStructure.getAdmissionFee());
+        response.setTransportFee(feeStructure.getTransportFee());
+        response.setLibraryFee(feeStructure.getLibraryFee());
+        response.setExamFee(feeStructure.getExamFee());
+        response.setSportsFee(feeStructure.getSportsFee());
+        response.setLabFee(feeStructure.getLabFee());
+        response.setDevelopmentFee(feeStructure.getDevelopmentFee());
+        response.setTotalFee(feeStructure.getTotalFee());
+        response.setMaxDiscount(feeStructure.getMaxDiscount());
+        response.setLateFeePenalty(feeStructure.getLateFeePenalty());
+
+        // Dates
+        response.setEffectiveFrom(feeStructure.getEffectiveFrom());
+        response.setDueDate(feeStructure.getDueDate());
+
+        // Audit
+        response.setIsDeleted(feeStructure.getIsDeleted());
+        response.setCreatedBy(feeStructure.getCreatedBy());
+        response.setCreatedAt(feeStructure.getCreatedAt());
+        response.setUpdatedBy(feeStructure.getUpdatedBy());
+        response.setUpdatedAt(feeStructure.getUpdatedAt());
+
+        return response;
+    }
 }
+

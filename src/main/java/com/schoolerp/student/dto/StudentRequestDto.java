@@ -75,7 +75,7 @@ public class StudentRequestDto {
     
     private Integer section;
     
-    private String academicYear = "2024-25";
+    private Integer academicYear;
     
     private String previousSchoolName;
     

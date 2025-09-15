@@ -33,7 +33,7 @@ public class StudentPromotionMapper {
     private Integer toSection;
 
     @Column(nullable = false)
-    private String academicYear;
+    private Integer academicYear;
 
     @Column(nullable = false)
     private LocalDateTime promotionDate;
