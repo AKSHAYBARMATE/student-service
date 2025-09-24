@@ -19,7 +19,7 @@ pipeline {
         stage('Docker Version') {
             steps {
                 sh 'docker --version'
-                sh 'docker compose --version'
+                sh 'docker-compose --version'  // ✅ Use with hyphen
             }
         }
 
@@ -40,9 +40,9 @@ pipeline {
                         // Remove existing image
                         sh "docker rmi -f ${TARGET_IMAGE_NAME} || true"
 
-                        // Build and run the service using docker-compose
-                        sh "docker compose -f ${COMPOSE_FILE} build ${TARGET_SERVICE}"
-                        sh "docker compose -f ${COMPOSE_FILE} up -d ${TARGET_SERVICE}"
+                        // ✅ Use docker-compose (with hyphen) for build and up
+                        sh "docker-compose -f ${COMPOSE_FILE} build ${TARGET_SERVICE}"
+                        sh "docker-compose -f ${COMPOSE_FILE} up -d ${TARGET_SERVICE}"
                     } else {
                         error "${REGISTRY_CONTAINER_NAME} is not running. Aborting deployment of ${TARGET_SERVICE}."
                     }
