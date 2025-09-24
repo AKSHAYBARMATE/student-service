@@ -2,11 +2,11 @@ pipeline {
     agent any
 
     environment {
-        IMAGE_NAME = "registry"
-        CONTAINER_NAME = "adminserviceregistry"
-        DOCKER_NETWORK = "updated_orgadmin_rmscadminnetwork"
-        HOST_PORT = "8761"
-        CONTAINER_PORT = "8761"
+        COMPOSE_FILE = "docker-compose.uploading.yml"
+        REGISTRY_CONTAINER_NAME = "adminserviceregistry"
+        TARGET_SERVICE = "uploadingservice"
+        TARGET_CONTAINER_NAME = "configurationservice" // container_name from your compose file
+        TARGET_IMAGE_NAME = "configuration:latest" // image name from your compose file
     }
 
     stages {
@@ -19,44 +19,34 @@ pipeline {
         stage('Docker Version') {
             steps {
                 sh 'docker --version'
+                sh 'docker compose version'
             }
         }
 
-        stage('Clean Old Docker Image') {
+        stage('Check Registry and Run Service') {
             steps {
-                echo "Removing old Docker image if it exists..."
-                sh "docker rmi -f ${IMAGE_NAME}:latest || true"
-            }
-        }
+                script {
+                    def isRegistryRunning = sh(
+                        script: "docker ps -q -f name=${REGISTRY_CONTAINER_NAME}",
+                        returnStdout: true
+                    ).trim()
 
-        stage('Build Docker Image') {
-            steps {
-                echo "Building Docker image..."
-                sh "docker build -t ${IMAGE_NAME}:latest ."
-            }
-        }
+                    if (isRegistryRunning) {
+                        echo "${REGISTRY_CONTAINER_NAME} is running. Proceeding to build and start ${TARGET_SERVICE}..."
 
-        stage('Stop & Remove Old Container') {
-            steps {
-                sh """
-                    docker stop ${CONTAINER_NAME} || true
-                    docker rm ${CONTAINER_NAME} || true
-                """
-            }
-        }
+                        // Remove existing container
+                        sh "docker rm -f ${TARGET_CONTAINER_NAME} || true"
 
-        stage('Run Docker Container') {
-            steps {
-                sh """
-                    docker run -d --name ${CONTAINER_NAME} \\
-                        -p ${HOST_PORT}:${CONTAINER_PORT} \\
-                        --network ${DOCKER_NETWORK} \\
-                        -e EUREKA_SERVER_ENABLE_SELF_PRESERVATION=false \\
-                        -e EUREKA_SERVER_EVICTION_INTERVAL_TIMER_IN_MS=5000 \\
-                        -e EUREKA_CLIENT_REGISTER_WITH_EUREKA=false \\
-                        -e EUREKA_CLIENT_FETCH_REGISTRY=false \\
-                        ${IMAGE_NAME}:latest
-                """
+                        // Remove existing image
+                        sh "docker rmi -f ${TARGET_IMAGE_NAME} || true"
+
+                        // Build and run the service
+                        sh "docker compose -f ${COMPOSE_FILE} build ${TARGET_SERVICE}"
+                        sh "docker compose -f ${COMPOSE_FILE} up -d ${TARGET_SERVICE}"
+                    } else {
+                        error "${REGISTRY_CONTAINER_NAME} is not running. Aborting deployment of ${TARGET_SERVICE}."
+                    }
+                }
             }
         }
     }

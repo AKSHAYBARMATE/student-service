@@ -1,0 +1,29 @@
+services:
+  uploadingservice:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: configuration:latest
+    container_name: configurationservice
+    ports:
+      - "8084:8084"
+    networks:
+      - updated_orgadmin_rmscadminnetwork
+    environment:
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://adminserviceregistry:8761/eureka
+      EUREKA_CLIENT_REGISTER_WITH_EUREKA: "true"
+      EUREKA_CLIENT_FETCH_REGISTRY: "true"
+      EUREKA_INSTANCE_LEASE_RENEWAL_INTERVAL_IN_SECONDS: "10"
+      EUREKA_INSTANCE_LEASE_EXPIRATION_DURATION_IN_SECONDS: "30"
+      EUREKA_INSTANCE_ENABLE_SELF_PRESERVATION: "false"
+      MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE: health,info,eureka,shutdown
+
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/postgres
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: root
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+    restart: on-failure
+
+networks:
+  updated_orgadmin_rmscadminnetwork:
+    external: true
