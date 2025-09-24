@@ -3,31 +3,30 @@
 # ======================
 # Build stage
 # ======================
-FROM maven:3.8.7-eclipse-temurin-17 AS build
+FROM maven:3.9.6-eclipse-temurin-21 AS build
 WORKDIR /app
 
-# First copy pom.xml and download dependencies (better cache)
+# Cache dependencies
 COPY pom.xml .
 RUN mvn dependency:go-offline
 
-# Copy the source code
+# Copy source and build
 COPY src src
-
-# Build the application (skip tests for faster builds)
 RUN mvn clean package -DskipTests
 
 # ======================
 # Run stage
 # ======================
-FROM openjdk:17-jdk-slim
+FROM eclipse-temurin:21-jdk-jammy as runtime
 WORKDIR /app
 
-# Copy only the built jar from build stage
+# Copy the built JAR
 COPY --from=build /app/target/*.jar app.jar
 
-
-# ✅ Copy Excel (and other resource) files to same path used in code
-COPY src/main/resources/ /app/src/main/resources/
-
+# Expose Eureka default port
 EXPOSE 8084
-ENTRYPOINT ["java", "-jar", "app.jar"]
+
+# ✅ Fix for CgroupInfo NPE in Docker (metrics auto-config disabled)
+ENTRYPOINT java \
+  -Dspring.autoconfigure.exclude=org.springframework.boot.actuate.autoconfigure.metrics.SystemMetricsAutoConfiguration \
+  -jar app.jar
