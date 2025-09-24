@@ -5,8 +5,8 @@ pipeline {
         COMPOSE_FILE = "docker-compose.studentservice.yml"
         REGISTRY_CONTAINER_NAME = "serviceregistry"
         TARGET_SERVICE = "studentservice"
-        TARGET_CONTAINER_NAME = "studentservice" // container_name from your compose file
-        TARGET_IMAGE_NAME = "studentservice:latest" // image name from your compose file
+        TARGET_CONTAINER_NAME = "studentservice"
+        TARGET_IMAGE_NAME = "studentservice:latest"
     }
 
     stages {
@@ -19,7 +19,7 @@ pipeline {
         stage('Docker Version') {
             steps {
                 sh 'docker --version'
-                sh 'docker compose version'
+                sh 'docker-compose --version'
             }
         }
 
@@ -40,9 +40,9 @@ pipeline {
                         // Remove existing image
                         sh "docker rmi -f ${TARGET_IMAGE_NAME} || true"
 
-                        // Build and run the service
-                        sh "docker compose -f ${COMPOSE_FILE} build ${TARGET_SERVICE}"
-                        sh "docker compose -f ${COMPOSE_FILE} up -d ${TARGET_SERVICE}"
+                        // Build and run the service using docker-compose
+                        sh "docker-compose -f ${COMPOSE_FILE} build ${TARGET_SERVICE}"
+                        sh "docker-compose -f ${COMPOSE_FILE} up -d ${TARGET_SERVICE}"
                     } else {
                         error "${REGISTRY_CONTAINER_NAME} is not running. Aborting deployment of ${TARGET_SERVICE}."
                     }
