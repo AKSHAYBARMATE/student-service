@@ -8,6 +8,7 @@ import java.time.LocalDate;
 @Data
 public class FeeStructureResponse {
 
+    private Long id;
     private Long classId;
     private String className;
 

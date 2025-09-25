@@ -160,6 +160,7 @@ public class StudentMapper {
 
         FeeStructureResponse response = new FeeStructureResponse();
 
+        response.setId(feeStructure.getId());
 
         // Class
         if (feeStructure.getClassId() != null) {
