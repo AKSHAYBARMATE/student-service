@@ -31,7 +31,7 @@ public class PromoteStudentsRequestDto {
     @Min(value = 1, message = "To section must be greater than 0")
     private Integer toSection;
 
-    @NotBlank(message = "Academic year is required")
+    @NotNull(message = "Academic year is required")
     private Integer academicYear;
 
     private boolean markAsAlumni = false;
