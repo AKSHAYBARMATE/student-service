@@ -24,20 +24,4 @@ public class WebConfig implements WebMvcConfigurer {
                 .excludePathPatterns("/actuator/**"); // Exclude health check endpoints
     }
 
-    @Bean
-    public WebMvcConfigurer corsConfigurer() {
-        return new WebMvcConfigurer() {
-            @Override
-            public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/**")
-                        .allowedOrigins("*") // Allow all origins
-                        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
-                        .allowedHeaders("*")
-                        .allowCredentials(false); // Cannot be true when using "*" in allowedOrigins
-            }
-        };
-    }
-
-
-
 }
