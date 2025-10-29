@@ -17,7 +17,7 @@ import jakarta.validation.Valid;
 import java.util.List;
 
 @RestController
-@RequestMapping("/sms/api/v1/student-service/")
+@RequestMapping("/api/v1/student-service/")
 @Validated
 @Slf4j
 public class StudentController {
